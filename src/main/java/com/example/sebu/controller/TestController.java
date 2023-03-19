@@ -17,7 +17,7 @@ public class TestController {
 		@GetMapping("/home")
 		public String goHome(HttpServletRequest request) {
 			Map map = new HashMap<>();
-			//System.out.println("enter");
+			System.out.println("enter");
 			return "hello home";
 		}
 	
