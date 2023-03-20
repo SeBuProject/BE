@@ -1,8 +1,6 @@
 package com.example.sebu.controller;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -10,20 +8,23 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.springframework.stereotype.Controller;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import jakarta.servlet.http.HttpServletRequest;
+import com.example.sebu.service.TestService;
+
+import lombok.extern.log4j.Log4j2;
+@Log4j2
 @RestController
 public class TestController {
+	
+	  @Autowired
+	  TestService testService;
 
 	  @PostMapping(value = "/home")
 	  public String readExcel(@RequestParam("file") MultipartFile file, Model model)
@@ -55,6 +56,15 @@ public class TestController {
 	      System.out.println(row.getCell(1).getStringCellValue());
 
 	    }
+
+	    return "excelList";
+
+	  }
+	  
+	  @GetMapping(value = "/mybat")
+	  public String myBat() {
+		 
+	     System.out.println(testService.getData());
 
 	    return "excelList";
 
