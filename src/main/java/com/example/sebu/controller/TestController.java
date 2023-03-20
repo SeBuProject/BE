@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.sebu.service.RestTemplateService;
 import com.example.sebu.service.TestService;
 
 import lombok.extern.log4j.Log4j2;
@@ -25,6 +26,9 @@ public class TestController {
 	
 	  @Autowired
 	  TestService testService;
+	  
+	  @Autowired
+	  RestTemplateService restTemplateService;
 
 	  @PostMapping(value = "/home")
 	  public String readExcel(@RequestParam("file") MultipartFile file, Model model)
@@ -57,6 +61,16 @@ public class TestController {
 
 	    }
 
+	    return "excelList";
+
+	  }
+	  
+	  @GetMapping(value = "/apiTest")
+	  public String apiTest() {
+		 String param = "param";
+		  String rsp = restTemplateService.callPostApi("https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=%2FrH1%2BoYiAtbCXqXTZyLT0bL8eTGbv9c%2FU3vGHD9MwzkH%2FNOPvjfEG6CrqY2YOSgq6gxhah7x6qt3IssjcWcfqA%3D%3D", param);
+		  
+		  System.out.println(rsp);
 	    return "excelList";
 
 	  }
