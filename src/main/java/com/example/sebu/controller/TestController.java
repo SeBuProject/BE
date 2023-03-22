@@ -9,6 +9,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +25,8 @@ import lombok.extern.log4j.Log4j2;
 @RestController
 public class TestController {
 	
+	  @Value("${api.servicekey}")
+	  private String serviceKey;
 	  @Autowired
 	  TestService testService;
 	  
@@ -68,7 +71,7 @@ public class TestController {
 	  @GetMapping(value = "/apiTest")
 	  public String apiTest() {
 		 String param = "param";
-		  String rsp = restTemplateService.callPostApi("https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=%2FrH1%2BoYiAtbCXqXTZyLT0bL8eTGbv9c%2FU3vGHD9MwzkH%2FNOPvjfEG6CrqY2YOSgq6gxhah7x6qt3IssjcWcfqA%3D%3D", param);
+		  String rsp = restTemplateService.callPostApi("https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey="+serviceKey+"", param);
 		  
 		  System.out.println(rsp);
 	    return "excelList";
