@@ -1,6 +1,7 @@
 package com.example.sebu.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -34,12 +35,14 @@ public class TestController {
 	  
 	  @Autowired
 	  RestTemplateService restTemplateService;
-
+	  
 	  @PostMapping(value = "/home")
 	  public String readExcel(@RequestParam("file") MultipartFile file, Model model)
 	      throws IOException { // 2
 
-
+		ArrayList<String> param = new ArrayList<String>();
+		String cellVal = "";
+		
 	    String extension = FilenameUtils.getExtension(file.getOriginalFilename()); // 3
 
 	    if (!extension.equals("xlsx") && !extension.equals("xls")) {
@@ -59,12 +62,16 @@ public class TestController {
 	    for (int i = 1; i < worksheet.getPhysicalNumberOfRows(); i++) { // 4
 
 	      Row row = worksheet.getRow(i);
-
-
-	      System.out.println(row.getCell(0).getStringCellValue());
-	      System.out.println(row.getCell(1).getStringCellValue());
-
+	      
+	      cellVal = row.getCell(1).getStringCellValue();
+	      
+	      if(cellVal != "") {
+	    	  
+	    	  cellVal = cellVal.replaceAll("-", "");
+	    	  param.add(cellVal);
+	      	}
 	    }
+	    String rsp = restTemplateService.businessStatusInquiry("https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey="+serviceKey+"", param);
 
 	    return "excelList";
 
@@ -73,7 +80,7 @@ public class TestController {
 	  @GetMapping(value = "/apiTest")
 	  public String apiTest() {
 		 String param = "param";
-		  String rsp = restTemplateService.callPostApi("https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey="+serviceKey+"", param);
+		  String rsp = restTemplateService.businessStatusInquiry("https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey="+serviceKey+"", param);
 		  
 		  System.out.println(rsp);
 	    return "excelList";
