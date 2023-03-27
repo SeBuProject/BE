@@ -71,7 +71,7 @@ public class TestController {
 	    	  param.add(cellVal);
 	      	}
 	    }
-	    String rsp = restTemplateService.businessStatusInquiry("https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey="+serviceKey+"", param);
+	    restTemplateService.businessStatusInquiry("https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey="+serviceKey+"", param);
 
 	    return "excelList";
 
@@ -80,9 +80,8 @@ public class TestController {
 	  @GetMapping(value = "/apiTest")
 	  public String apiTest() {
 		 String param = "param";
-		  String rsp = restTemplateService.businessStatusInquiry("https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey="+serviceKey+"", param);
+		 restTemplateService.businessStatusInquiry("https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey="+serviceKey+"", param);
 		  
-		  System.out.println(rsp);
 	    return "excelList";
 
 	  }
