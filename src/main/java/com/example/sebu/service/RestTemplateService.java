@@ -72,7 +72,7 @@ public class RestTemplateService {
 		
 		
 //		JSONParser parser = new JSONParser();
-//		object.put("b_no", list);
+//		object.put("b_no", list); 
 		
 		/*RestTemplate restTemplate = new RestTemplate();
 		
