@@ -2,9 +2,11 @@ package com.example.sebu.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -58,20 +60,39 @@ public class TestController {
 	    }
 
 	     Sheet worksheet = workbook.getSheetAt(0);
-
-	    for (int i = 1; i < worksheet.getPhysicalNumberOfRows(); i++) { // 4
-
-	      Row row = worksheet.getRow(i);
-	      
-	      cellVal = row.getCell(1).getStringCellValue();
-	      
-	      if(cellVal != "") {
-	    	  
-	    	  cellVal = cellVal.replaceAll("-", "");
-	    	  param.add(cellVal);
-	      	}
-	    }
-	    String rsp = restTemplateService.businessStatusInquiry("https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey="+serviceKey+"", param);
+	    int cellType = 0;
+	    for (int i = 0; i < worksheet.getPhysicalNumberOfRows(); i++) { 
+	    	Row row = worksheet.getRow(i);
+			      Iterator<Cell> iter = row.iterator();
+			      while(iter.hasNext()) {
+			    	  Cell cell = iter.next();
+			    	  cellType = cell.getCellType();
+			    	  if(cellType == 0) {
+			    		  cellVal = String.valueOf(((Double)cell.getNumericCellValue()).intValue());
+			    	  }else if(cellType == 1) {
+			    		  cellVal = cell.getStringCellValue();
+			    	  }else {
+			    		  cellVal = "";
+			    	  }
+			    	  
+			    	  if(cellVal != "" && cellVal != null) {
+			    		  if(cellVal.length() == 12) {
+			    			  param.add(cellVal.replaceAll("-", ""));
+			    		  }else if(cellVal.length() == 10){
+			    			  param.add(cellVal);
+			    		  }
+			    	  }
+			      }
+			      /*if(cellVal != "") {
+			    	  
+			    	  cellVal = cellVal.replaceAll("-", "");
+			    	  param.add(cellVal);
+			      	}*/
+			      
+			      System.out.println(param);
+	    	}   
+	    
+	    restTemplateService.businessStatusInquiry("https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey="+serviceKey+"", param);
 
 	    return "excelList";
 
@@ -80,9 +101,8 @@ public class TestController {
 	  @GetMapping(value = "/apiTest")
 	  public String apiTest() {
 		 String param = "param";
-		  String rsp = restTemplateService.businessStatusInquiry("https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey="+serviceKey+"", param);
+		 restTemplateService.businessStatusInquiry("https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey="+serviceKey+"", param);
 		  
-		  System.out.println(rsp);
 	    return "excelList";
 
 	  }

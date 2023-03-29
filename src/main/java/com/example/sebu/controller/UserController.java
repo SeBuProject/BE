@@ -33,7 +33,7 @@ public class UserController {
 		if(sebuMember != null) {
 			return ResponseEntity.ok().body(userTokenService.getToken(sebuMember));
 		}else {
-			return ResponseEntity.badRequest().body("로그인 오류");
+			return ResponseEntity.badRequest().body("로그인 오류"); 
 		}
 		
 	}
