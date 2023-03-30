@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.sebu.message.ResponseMessage;
 import com.example.sebu.service.RestTemplateService;
 import com.example.sebu.service.TestService;
 
@@ -38,17 +39,20 @@ public class TestController {
 	  @Autowired
 	  RestTemplateService restTemplateService;
 	  
-	  @PostMapping(value = "/home")
-	  public String readExcel(@RequestParam("file") MultipartFile file, Model model)
+	  @PostMapping(value = "/businessStatusInqr")
+	  public ResponseMessage readExcel(@RequestParam("file") MultipartFile file, Model model)
 	      throws IOException { // 2
-
+		
+		ResponseMessage resp = new ResponseMessage();
 		ArrayList<String> param = new ArrayList<String>();
 		String cellVal = "";
-		
+		String bNoPattern = "^\\d{3}-\\d{2}-\\d{5}$";
 	    String extension = FilenameUtils.getExtension(file.getOriginalFilename()); // 3
 
 	    if (!extension.equals("xlsx") && !extension.equals("xls")) {
-	      throw new IOException("엑셀파일만 업로드 해주세요.");
+	    	resp.setCode("40000");
+	    	resp.setMessage("파일 확장자 오류");
+	    	return resp;
 	    }
 
 	    Workbook workbook = null;
@@ -76,10 +80,9 @@ public class TestController {
 			    	  }
 			    	  
 			    	  if(cellVal != "" && cellVal != null) {
-			    		  if(cellVal.length() == 12) {
-			    			  param.add(cellVal.replaceAll("-", ""));
-			    		  }else if(cellVal.length() == 10){
-			    			  param.add(cellVal);
+			    		  if(cellVal.length() == 12 && cellVal.matches(bNoPattern)) {
+			    			  cellVal = cellVal.replaceAll("-", "");
+					    	  param.add(cellVal);
 			    		  }
 			    	  }
 			      }
@@ -89,12 +92,12 @@ public class TestController {
 			    	  param.add(cellVal);
 			      	}*/
 			      
-			      System.out.println(param);
+			      //System.out.println(param);
 	    	}   
 	    
-	    restTemplateService.businessStatusInquiry("https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey="+serviceKey+"", param);
-
-	    return "excelList";
+	    resp = restTemplateService.businessStatusInquiry("https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey="+serviceKey+"", param);
+	    
+	    return resp;
 
 	  }
 	  

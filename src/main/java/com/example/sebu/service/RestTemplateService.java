@@ -1,44 +1,23 @@
 package com.example.sebu.service;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
-import org.apache.poi.ss.usermodel.BorderStyle;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFColor;
-import org.apache.poi.xssf.usermodel.XSSFFont;
-//excel
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.springframework.stereotype.Service;
 
-//import org.springframework.http.MediaType;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-
+import com.example.sebu.message.ResponseMessage;
 //utils
 import com.example.sebu.utils.Utils;
 
 @Service
 public class RestTemplateService {
 
-	public void businessStatusInquiry(String url, Object param) {
+	public ResponseMessage businessStatusInquiry(String url, Object param) {
 		//restTemplate 방식은 계속 인증키 에러뜸. okHttp3로하면 정상으로 가져옴
 		
 		//변수선언
+		ResponseMessage resp = new ResponseMessage();
 		JSONObject object = new JSONObject();
 		JSONArray businessStatusInquiryArr = new JSONArray();
 		int apiCallCnt = 1;
@@ -71,8 +50,15 @@ public class RestTemplateService {
 			
 			Utils.callbusinessStatusInquiryApi(url,object,businessStatusInquiryArr);
 		}
-		
+		//추후에 따로 controller 기능으로 빼야함
 		Utils.createExcel(businessStatusInquiryArr);
+		
+		resp.setData(businessStatusInquiryArr);
+		
+		return resp;
+		
+	
+		
 		
 // RestTemplate 방식	
 //		JSONParser parser = new JSONParser();
