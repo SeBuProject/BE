@@ -137,13 +137,25 @@ public class Utils {
         
 		for(int i=0; i<businessStatusInquiryArr.size(); i++) {
 				Map obj = (HashMap)businessStatusInquiryArr.get(i);
+				
 				b_no = String.valueOf(obj.get("b_no"));
+				//사업자번호 - 추가
+				StringBuilder sb = new StringBuilder();
+				sb.append(b_no);
+				b_no=sb.insert(3, "-").insert(6, "-").toString();
+				
 				b_stt = String.valueOf(obj.get("b_stt"));
+				
 				tax_type = String.valueOf(obj.get("tax_type"));
+				
 				end_dt = String.valueOf(obj.get("end_dt"));
+				
 				utcc_yn = String.valueOf(obj.get("utcc_yn"));
+				
 				tax_type_change_dt = String.valueOf(obj.get("tax_type_change_dt"));
+				
 				invoice_apply_dt = String.valueOf(obj.get("invoice_apply_dt"));
+				
 				
 				data = new String[] {b_no,b_stt,tax_type,end_dt,utcc_yn,tax_type_change_dt,invoice_apply_dt};
 					
