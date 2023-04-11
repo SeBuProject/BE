@@ -7,6 +7,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.FillPatternType;
@@ -17,9 +21,19 @@ import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.xmlbeans.ResourceLoader;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+
+import com.google.gson.Gson;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -27,7 +41,16 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+
 public class Utils {
+	
+	private static WebDriver driver;
+	
+	@Value("${homtax.pwd}")
+	private String hardCodingPwd;
+	
+	@Autowired
+	ResourceLoader resourceLoader;
 	
 	public static void callbusinessStatusInquiryApi(String url, JSONObject object,JSONArray businessStatusInquiryArr) {
 		JSONParser parser = new JSONParser();
@@ -211,6 +234,138 @@ public class Utils {
 			e.printStackTrace();
 		}
         
-
 	}
+	
+	public static void callHometaxLogin(){
+		JSONParser parser = new JSONParser();
+		MediaType mediaType = MediaType.parse("application/json");
+		OkHttpClient client = new OkHttpClient().newBuilder().build();
+        HttpClient htpclient = new HttpClient();
+        GetMethod instance = new GetMethod("https://www.hometax.go.kr/wqAction.do?actionId=ATXPPZXA001R01&screenId=UTXPPABA01");
+        instance.setFollowRedirects(false);
+        String wmonId = "";
+        String TxppSessionId = "";
+        try {
+			int statusCode = htpclient.executeMethod(instance);
+		} catch (HttpException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+        Header[] headers = instance.getResponseHeaders();
+        for(Header a : headers) {
+        	if(a.getName().equals("Set-Cookie") && a.getValue().contains("WMONID")) {
+        		wmonId =a.getValue().substring(7,a.getValue().indexOf(";"));
+        	}else if(a.getName().equals("Set-Cookie") && a.getValue().contains("TXPPsessionID")) {
+        		TxppSessionId =a.getValue().substring(14,a.getValue().indexOf(";"));
+        	}
+        }
+
+		Request req = new Request.Builder()
+				.addHeader("Content-Type", "application/json")
+				.addHeader("Host", ".hometax.go.kr")
+				.url("https://www.hometax.go.kr/wqAction.do?actionId=ATXPPZXA001R01&screenId=UTXPPABA01")
+				.build();
+		try {
+			Response rsp = client.newCall(req).execute();
+			String res = rsp.body().string();
+			Gson gson = new Gson();
+			Map resMap = gson.fromJson(res, HashMap.class);
+		//	JSONObject objResp =(JSONObject)parser.parse(rsp.body().string());
+//			
+//			JSONArray array = (JSONArray)objResp.get("pkcEncSsn");
+//			for(Object a : array) {
+//				System.out.println(a.toString());
+//			}
+			System.out.println(resMap.get("pkcEncSsn"));
+			System.out.println("wmonId :"+wmonId);
+			System.out.println("TxppSessionId :"+TxppSessionId);
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+
+	public static void seleniumTest(String pwd) {
+		
+		String url = "https://www.hometax.go.kr/websquare/websquare.html?w2xPath=/ui/pp/index.xml";
+		
+		System.setProperty("webdriver.chrome.driver", "chromedriver.exe");
+
+		try {
+			
+			ChromeOptions options = new ChromeOptions();
+			options.addArguments("--remote-allow-origins=*");
+			options.addArguments("--headless");
+			
+			driver = new ChromeDriver(options);
+			
+			driver.get(url);
+			
+			/*Actions action = new Actions(driver);
+			WebElement we = driver.findElement(By.cssSelector("#textbox81212923"));
+			action.moveToElement(we).build().perform();
+			
+			Thread.sleep(2000);
+			WebElement ele = driver.findElement(By.cssSelector("#menuAtag_0104030000"));
+			ele.click();
+			
+			Thread.sleep(2000);
+			WebElement ele2 = driver.findElement(By.cssSelector("#menuAtag_0104030100"));
+			ele2.click();*/
+			WebElement loginElement = driver.findElement(By.cssSelector("#group88615548"));
+			
+			System.out.println(loginElement.getText());
+			Thread.sleep(2000);
+			
+			loginElement.click();
+			
+			Thread.sleep(3000);
+			WebElement frame = driver.findElement(By.id("txppIframe"));
+			driver.switchTo().frame(frame);
+			
+			
+			WebElement publicCertBtn = driver.findElement(By.id("anchor22"));
+			
+			Thread.sleep(3000);
+			
+			publicCertBtn.click();
+			
+			frame = driver.findElement(By.id("dscert"));
+			
+			driver.switchTo().frame(frame);
+			
+			
+			Thread.sleep(3000);
+			
+			WebElement certPwEle = driver.findElement(By.cssSelector("#input_cert_pw"));
+			
+			certPwEle.sendKeys(pwd);
+			
+			
+			
+			WebElement certLoginEle = driver.findElement(By.cssSelector("#btn_confirm_iframe"));
+			
+			certLoginEle.click(); 
+			
+			Thread.sleep(5000);
+			
+			WebElement selectBar = driver.findElement(By.cssSelector("#textbox81212923"));
+			
+			selectBar.click();
+			
+			
+			
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 }
+
