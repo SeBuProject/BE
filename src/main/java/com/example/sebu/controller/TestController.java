@@ -24,8 +24,13 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.sebu.message.ResponseMessage;
 import com.example.sebu.service.RestTemplateService;
 import com.example.sebu.service.TestService;
+import com.example.sebu.utils.Utils;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
+@Tag(name = "세무사를부탁해(세부) 기능 API", description = "사업자상태 조회, 크롤링, mybatis 등 API")
 @Log4j2
 @RestController
 @RequestMapping("/api/v1/contents")
@@ -33,12 +38,16 @@ public class TestController {
 	
 	  @Value("${api.servicekey}")
 	  private String serviceKey;
+	  @Value("${homtax.pwd}")
+	  private String pwd;
 	  @Autowired
 	  TestService testService;
 	  
 	  @Autowired
 	  RestTemplateService restTemplateService;
 	  
+	  @Operation(summary = "사업자상태조회", description = "수백, 수천개의 사업자번호가 있는 엑셀로 사업자상태를 조회")
+	  @Parameter(name = "file", description = "엑셀형식파일")
 	  @PostMapping(value = "/businessStatusInqr")
 	  public ResponseMessage readExcel(@RequestParam("file") MultipartFile file, Model model)
 	      throws IOException { // 2
@@ -100,22 +109,24 @@ public class TestController {
 	    return resp;
 
 	  }
-	  
+	  @Operation(summary = "홈택스크롤링", description = "셀레니움을 이용한 홈택스 크롤링")
+	  @Parameter(name = "none", description = "파라미터가 필요없는 api 입니다")
 	  @GetMapping(value = "/apiTest")
-	  public String apiTest() {
-		 String param = "param";
-		 restTemplateService.businessStatusInquiry("https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey="+serviceKey+"", param);
+	  public void apiTest() {
 		  
-	    return "excelList";
+		  Utils.seleniumTest(pwd);
+		// Utils.callHometaxLogin();
+		  
 
 	  }
-	  
+	  @Operation(summary = "DB조회테스트", description = "DB조회 테스트 API")
+	  @Parameter(name = "none", description = "파라미터가 필요없는 api 입니다")
 	  @GetMapping(value = "/mybat")
-	  public String myBat() {
+	  public ResponseMessage myBat() {
 		 
-	     System.out.println(testService.getData());
+	     ResponseMessage rsp =testService.getData();
 
-	    return "excelList";
+	    return rsp;
 
 	  }
 	}
