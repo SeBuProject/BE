@@ -50,8 +50,6 @@ public class RestTemplateService {
 			
 			Utils.callbusinessStatusInquiryApi(url,object,businessStatusInquiryArr);
 		}
-		//추후에 따로 controller 기능으로 빼야함
-		Utils.createExcel(businessStatusInquiryArr);
 		
 		resp.setData(businessStatusInquiryArr);
 		

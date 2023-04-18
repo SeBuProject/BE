@@ -30,7 +30,7 @@ public class SecurityConfig {
 		return httpSecurity.
 				httpBasic().disable()
 				.csrf().disable()
-				.cors().and()
+				.cors().disable()
 				.authorizeHttpRequests().requestMatchers("/api/v1/users/**").permitAll()
 				.requestMatchers("/**").permitAll()
 				.requestMatchers("/api/v1/contents/**").permitAll()
