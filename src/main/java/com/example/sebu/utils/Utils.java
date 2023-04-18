@@ -156,8 +156,6 @@ public class Utils {
         String tax_type_change_dt = "";
         String invoice_apply_dt = "";
         
-        Object[] bodyData =businessStatusInquiryArr.toArray();
-        
 		for(int i=0; i<businessStatusInquiryArr.size(); i++) {
 				Map obj = (HashMap)businessStatusInquiryArr.get(i);
 				

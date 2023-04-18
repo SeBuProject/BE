@@ -11,11 +11,13 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.json.simple.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -107,6 +109,32 @@ public class TestController {
 	    resp = restTemplateService.businessStatusInquiry("https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey="+serviceKey+"", param);
 	    
 	    return resp;
+
+	  }
+	  
+	  @Operation(summary = "사업자상태조회엑셀 다운로드", description = "사업자상태조회엑셀 다운로드 API")
+	  @Parameter(name = "Object", description = "Object 데이터")
+	  @PostMapping(value = "/downloadBusinessStatusInqrExcel")
+	  public ResponseMessage downloadBusinessStatusInqrExcel(@RequestBody Object param) {
+		 
+		 ResponseMessage rsp = new ResponseMessage();
+	     
+		 JSONArray paramArr = new JSONArray();
+		 
+		 for(Object obj : (ArrayList)param) {
+			 paramArr.add(obj);
+		 }
+		 
+		 try {
+	    	 Utils.createExcel(paramArr);
+	    	 
+	    	 rsp.setCode("20000");
+	    	 rsp.setMessage("엑셀 변환에 성공하였습니다.");
+	     }catch(Exception e) {
+	    	 rsp.setCode("40000");
+	    	 rsp.setMessage("엑셀 변환에 실패하였습니다.");
+	     }
+	    return rsp;
 
 	  }
 	  @Operation(summary = "홈택스크롤링", description = "셀레니움을 이용한 홈택스 크롤링")
