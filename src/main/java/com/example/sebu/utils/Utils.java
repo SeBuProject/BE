@@ -3,8 +3,11 @@ package com.example.sebu.utils;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.httpclient.Header;
@@ -205,7 +208,13 @@ public class Utils {
 			String body = "";
 			String ext = "";
 			
-			String location = System.getProperty("user.home")+ File.separator + "Downloads"+ File.separator +"사업자정보조회.xlsx";
+			SimpleDateFormat sdf = new SimpleDateFormat("YYYYMMdd");
+			
+			Calendar cal = Calendar.getInstance(Locale.KOREA);
+			
+			String nowDate = sdf.format(cal.getTime());
+			String location = System.getProperty("user.home")+ File.separator +"사업자정보조회_"+ nowDate+".xlsx";
+			
 			File file = new File(location);
 			if(!file.createNewFile()) {
 				if(location.lastIndexOf(".") != -1) {
@@ -363,6 +372,11 @@ public class Utils {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public static boolean isEmpty(String string) {
+		if(string==null || "".equals(string.trim()) || "null".toLowerCase().equals(string)) return false;
+		else return true;
 	}
 
 }
